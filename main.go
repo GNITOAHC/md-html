@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	version    bool
 	outputfile string
 	watch      bool
 	port       string
@@ -86,6 +87,7 @@ func write(inputfile, outputfile string) {
 }
 
 func init() {
+	flag.BoolVar(&version, "v", false, "Version of the program")
 	flag.BoolVar(&watch, "w", false, "Watch for changes in the markdown file")
 	flag.StringVar(&outputfile, "o", "out.html", "Name of the output file")
 	flag.StringVar(&port, "p", "8080", "Port to serve the HTML file")
@@ -99,6 +101,11 @@ func init() {
 func main() {
 	flag.Parse()
 	inputfile := flag.Arg(0)
+
+	if version {
+		fmt.Println("md-html v0.1.0")
+		return
+	}
 
 	// Initial write
 	write(inputfile, outputfile)
