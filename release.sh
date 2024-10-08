@@ -18,7 +18,7 @@ for platform in "${PLATFORMS[@]}"; do
         output_name+='.exe'
     fi
 
-    GOOS=$GOOS GOARCH=$GOARCH go build -o $BUILD_DIR/$output_name
+    GOOS=$GOOS GOARCH=$GOARCH go build -o $BUILD_DIR/$output_name -ldflags "-s -w"
     tar -czf $BUILD_DIR/$BINARY-$VERSION-$GOOS-$GOARCH.tar.gz -C $BUILD_DIR $output_name
 
     echo "Build $BINARY-$VERSION-$GOOS-$GOARCH.tar.gz done"
