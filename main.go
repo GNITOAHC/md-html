@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gnitoahc/md-html/converter"
@@ -89,7 +90,7 @@ func write(inputfile, outputfile string) {
 func init() {
 	flag.BoolVar(&version, "v", false, "Version of the program")
 	flag.BoolVar(&watch, "w", false, "Watch for changes in the markdown file")
-	flag.StringVar(&outputfile, "o", "out.html", "Name of the output file")
+	flag.StringVar(&outputfile, "o", "", "Name of the output file")
 	flag.StringVar(&port, "p", "8080", "Port to serve the HTML file")
 
 	flag.Usage = func() {
@@ -105,6 +106,12 @@ func main() {
 	if version {
 		fmt.Println("md-html v0.1.0")
 		return
+	}
+
+	// Get output filename
+	if outputfile == "" {
+		slices := strings.Split(inputfile, ".")
+		outputfile = strings.Join(slices[:len(slices)-1], "") + ".html"
 	}
 
 	// Initial write
@@ -128,6 +135,6 @@ func main() {
 	fs := http.FileServer(http.Dir(".")) // Serve files from the current directory
 	http.Handle("/", fs)
 
-	fmt.Printf("Please open the following URL in your browser: http://localhost:8080/%s", outputfile)
+	fmt.Printf("Visit the following URL: http://localhost:8080/%s, or simply refresh the HTML manually.", outputfile)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
