@@ -11,7 +11,7 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gnitoahc/md-html/converter"
-	tmpl "github.com/gnitoahc/md-html/template"
+	"github.com/gnitoahc/md-html/tmpl"
 )
 
 var (
