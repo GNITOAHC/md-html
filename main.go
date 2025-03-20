@@ -104,7 +104,7 @@ func main() {
 	inputfile := flag.Arg(0)
 
 	if version {
-		fmt.Println("md-html v", Version)
+		fmt.Println("md-html", Version)
 		return
 	}
 
