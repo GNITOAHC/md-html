@@ -19,6 +19,7 @@ Pre-built binaries are available on the [releases page](https://github.com/GNITO
 ### Homebrew
 
 ```bash
+brew tap gnitoahc/tap
 brew install gnitoahc/tap/md-html
 ```
 
