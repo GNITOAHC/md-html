@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gnitoahc/md-html/converter"
@@ -76,15 +78,13 @@ func write(inputfile, outputfile string) {
 		return
 	}
 
-	err = tmpl.Execute(f, map[string]interface{}{
+	err = tmpl.Execute(f, map[string]any{
 		"Content": template.HTML(html),
 	})
 	if err != nil {
 		log.Fatal(err.Error())
 		return
 	}
-
-	return
 }
 
 func init() {
@@ -135,6 +135,18 @@ func main() {
 	fs := http.FileServer(http.Dir(".")) // Serve files from the current directory
 	http.Handle("/", fs)
 
-	fmt.Printf("Visit the following URL: http://localhost:8080/%s, or simply refresh the HTML manually.", outputfile)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	fmt.Printf("Visit the following URL: http://localhost:%s/%s, or simply refresh the HTML manually.\n", port, outputfile)
+
+	go func() {
+		log.Fatal(http.ListenAndServe(":"+port, nil))
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	fmt.Println("\nShutting down, removing", outputfile)
+	if err := os.Remove(outputfile); err != nil {
+		log.Println("Failed to remove output file:", err)
+	}
 }
