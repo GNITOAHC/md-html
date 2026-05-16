@@ -2,6 +2,7 @@ package converter
 
 import (
 	"bytes"
+	"github.com/FurqanSoftware/goldmark-katex"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
@@ -12,6 +13,7 @@ func Md2HTML(source []byte) ([]byte, error) {
 	md := goldmark.New(
 		goldmark.WithExtensions(
 			extension.GFM,
+			&katex.Extender{},
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
