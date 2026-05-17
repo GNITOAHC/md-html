@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        run: |
+          BINARY="md-html"
+          BUILD_DIR="build"
+          VERSION="${GITHUB_REF#refs/tags/}"
+
+          mkdir -p $BUILD_DIR
+
+          PLATFORMS=("linux/amd64" "darwin/amd64" "darwin/arm64" "windows/amd64")
+
+          for platform in "${PLATFORMS[@]}"; do
+            GOOS="${platform%/*}"
+            GOARCH="${platform#*/}"
+
+            output_name=$BINARY
+            if [ "$GOOS" = "windows" ]; then
+              output_name="${BINARY}.exe"
+            fi
+
+            GOOS=$GOOS GOARCH=$GOARCH go build -o $BUILD_DIR/$output_name -ldflags "-s -w -X main.Version=$VERSION"
+            tar -czf $BUILD_DIR/$BINARY-$VERSION-$GOOS-$GOARCH.tar.gz -C $BUILD_DIR $output_name
+            rm $BUILD_DIR/$output_name
+
+            echo "Built $BINARY-$VERSION-$GOOS-$GOARCH.tar.gz"
+          done
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/*.tar.gz
+          generate_release_notes: true
