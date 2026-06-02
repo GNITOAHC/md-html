@@ -6,6 +6,7 @@ require (
 	github.com/FurqanSoftware/goldmark-katex v0.0.0-20260328091149-1897eb7a41e4
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/yuin/goldmark v1.8.2
+	golang.org/x/term v0.43.0
 )
 
 require (

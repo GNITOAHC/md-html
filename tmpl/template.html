@@ -25,8 +25,21 @@
       href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css"
     />
 
-    <!-- Live Reload -->
-    <script type="text/javascript" src="https://livejs.com/live.js"></script>
+    {{if .LiveReload}}
+    <!-- Live Reload via SSE -->
+    <script>
+      ;(function () {
+        const es = new EventSource('/reload')
+        es.onmessage = () => {
+          console.log('[md-html] Reloading...')
+          location.reload()
+        }
+        es.onerror = () => {
+          es.close()
+        }
+      })()
+    </script>
+    {{end}}
   </head>
 
   <body>
